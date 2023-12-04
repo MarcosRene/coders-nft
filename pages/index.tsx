@@ -1,7 +1,8 @@
 import Head from "next/head";
-import { ChangeEvent, useDeferredValue, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useState } from "react";
 
 import Card from "components/Card";
+import Container from "components/Container";
 
 export type NFTProps = {
   id: string;
@@ -28,7 +29,7 @@ export default function Home() {
   }
 
   return (
-    <section className="min-w-full px-24">
+    <Container className="min-w-full">
       <Head>
         <title>Coders NFT</title>
       </Head>
@@ -55,11 +56,11 @@ export default function Home() {
           ))}
         </div>
       </div>
-    </section>
+    </Container>
   );
 }
 
-const nftsMock = [
+export const nftsMock = [
   {
     id: "1",
     name: "Lil Pudgy #8305",

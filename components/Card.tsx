@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { useRouter } from "next/router";
 import { formatCurrency } from "utils/formatCurrency";
 import { Ethereum } from "assets/Ethereum";
 import { NFTProps } from "pages";
@@ -8,8 +9,13 @@ type CardProps = {
 };
 
 export default function Card({ nft }: CardProps) {
+  const router = useRouter();
+
   return (
-    <article className="width-[24rem] h-[31rem] bg-[#242634] rounded-[1.25rem] cursor-pointer">
+    <article
+      onClick={() => router.push(`/nft/${nft.id}`)}
+      className="width-[24rem] h-[31rem] bg-[#242634] rounded-[1.25rem] cursor-pointer"
+    >
       <img
         src={nft.image}
         alt={nft.name}
@@ -27,7 +33,9 @@ export default function Card({ nft }: CardProps) {
 
           <div className="flex mt-0.5">
             <Ethereum />
-            <span className="text-xl font-semibold">{formatCurrency(Number(nft.price))}</span>
+            <span className="text-xl font-semibold">
+              {formatCurrency(Number(nft.price))}
+            </span>
           </div>
 
           <div className="relative">
