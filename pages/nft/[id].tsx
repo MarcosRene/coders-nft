@@ -1,61 +1,135 @@
 /* eslint-disable @next/next/no-img-element */
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React from "react";
+import { useState } from "react";
+import {
+  useContract,
+  useDirectListings,
+  useDirectListing,
+  useNFT,
+  useAddress,
+} from "@thirdweb-dev/react";
+import toast from "react-hot-toast";
+
+import Listing from "services/mappers/Listing";
 
 import Card from "components/Card";
-import Container  from "components/Container";
-
-import { nftsMock } from "pages";
+import Container from "components/Container";
+import DetailsSkeleton from "components/DetailsSkeleton";
+import Spinner from "components/Spinner";
 
 export default function Details() {
-  const { query } = useRouter();
+  const {
+    query: { id: nftId },
+  } = useRouter();
 
-  const nft = nftsMock.find((nft) => nft.id === query.id);
+  const [isLoadingPurchase, setIsLoadingPurchase] = useState(false);
 
-  if (!nft) return null;
+  const { contract } = useContract(
+    process.env.NEXT_PUBLIC_SMART_CONTRACT_MARKETPLACE as string,
+    "marketplace-v3"
+  );
+
+  const { data: directListings } = useDirectListings(contract);
+
+  const {
+    data: listing,
+    isLoading,
+    error,
+  } = useDirectListing(contract, Number(nftId));
+
+  const { contract: contractAddress } = useContract(
+    listing?.assetContractAddress
+  );
+
+  console.log({ listing });
+
+  const { data: nft } = useNFT(contractAddress, listing?.asset.id);
+
+  const walletAddress = useAddress();
+
+  const isOwner = walletAddress && walletAddress === nft?.owner;
+  const hasDisabled = isLoadingPurchase || isOwner || listing?.quantity === "0";
+
+  const formatListings =
+    directListings &&
+    directListings.map((directListings) => Listing.toDomain(directListings));
+
+  const formatListing = listing && !isLoading && Listing.toDomain(listing);
+
+  async function handleBuyNft() {
+    try {
+      setIsLoadingPurchase(true);
+
+      await contract.directListings.buyFromListing(formatListing.id, 1);
+
+      toast.success("Your purchase was successful!");
+    } catch (error) {
+      toast.error(`There was an error trying to buy ${formatListing.name} ntf`);
+    } finally {
+      setIsLoadingPurchase(false);
+    }
+  }
 
   return (
     <Container>
       <Head>
-        <title>{nft.id} NFT - Details Page</title>
+        <title>{formatListing?.name} | Coders NFT</title>
       </Head>
 
       <div className="mt-24 flex">
-        <img
-          src={nft.image}
-          alt={nft.name}
-          className="rounded-[1.25rem] w-[40rem] h-auto"
-        />
+        {isLoading && !error ? (
+          <DetailsSkeleton />
+        ) : (
+          <>
+            <img
+              src={formatListing.image}
+              alt={formatListing.name}
+              className="rounded-[1.25rem] w-[40rem] h-auto"
+            />
 
-        <div className="ml-10 max-w-50%">
-          <h1 className="text-5xl font-bold">{nft.name}</h1>
-          <span className="text-[#93989A] mt-4 block">{nft.description}</span>
+            <div className="ml-10 max-w-50%">
+              <h1 className="text-5xl font-bold">{formatListing.name}</h1>
+              <span className="text-[#93989A] mt-4 block">
+                {formatListing.description}
+              </span>
 
-          <hr className="w-full border-[#242634] mt-8 mb-4" />
+              <hr className="w-full border-[#242634] mt-8 mb-4" />
 
-          <div className="flex flex-col">
-            <span className="text-[#93989A]">Creator</span>
-            <span>{nft.author}</span>
-          </div>
+              <div className="flex flex-col">
+                <span className="text-[#93989A]">Owner</span>
+                <span>
+                  {nft?.owner.slice(0, 10)} {isOwner && "(You)"}
+                </span>
+              </div>
 
-          <hr className="w-full border-[#242634] mt-8 mb-4" />
+              <hr className="w-full border-[#242634] mt-8 mb-4" />
 
-          <button className="px-12 py-4 bg-[#FF2748] text-white font-semibold rounded-xl hover:bg-[#ff4c6e] active:bg-[#e60032] transition-all">
-            Place a Bit
-          </button>
-        </div>
+              <button
+                onClick={handleBuyNft}
+                className={`px-12 py-4 bg-[#FF2748] text-white font-semibold rounded-xl transition-all ${
+                  hasDisabled
+                    ? "bg-[#ff4c6e] cursor-not-allowed"
+                    : "hover:bg-[#ff4c6e] active:bg-[#e60032]"
+                }`}
+                disabled={hasDisabled}
+              >
+                {isLoadingPurchase ? <Spinner /> : "Buy"}
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="mt-24">
         <h2 className="text-4xl mt-24 font-semibold">More Works</h2>
 
         <div className="flex flex-wrap items-start gap-4 mt-7">
-          {nftsMock
-            .slice()
-            .filter((item) => item.id !== nft.id)
+          {formatListings
+            ?.slice()
+            .filter((item) => item.id !== nftId)
             .map((nft) => (
-              <Card key={nft.id} nft={nft} />
+              <Card key={nft.id} listing={nft} />
             ))}
         </div>
       </div>
