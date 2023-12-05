@@ -7,6 +7,8 @@ type ContainerProps = ComponentProps<"section"> & {
 
 export default function Container({ children, ...attrs }: ContainerProps) {
   return (
-    <section className={twMerge("px-24", attrs.className)}>{children}</section>
+    <section className={twMerge("px-4 md:px-20 lg:px-24", attrs.className)}>
+      {children}
+    </section>
   );
 }

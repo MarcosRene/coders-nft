@@ -40,7 +40,7 @@ export default function Card({ listing }: CardProps) {
 
           <div className="relative">
             <button className="absolute right-1 bottom-0.5 px-7 py-4 bg-[#FF2748] text-white font-semibold rounded-xl hover:bg-[#ff4c6e] active:bg-[#e60032] transition-all">
-              Place a Bit
+              Place A Bit
             </button>
           </div>
         </div>

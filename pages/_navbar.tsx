@@ -8,7 +8,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="h-20 px-[10%] py-10 flex items-center justify-between">
+      <header className="h-20 px-4 md:px-[10%] py-10 flex items-center justify-between">
         <div
           onClick={() => router.push("/")}
           className="flex items-center cursor-pointer"

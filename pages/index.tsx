@@ -7,6 +7,7 @@ import Listing from "services/mappers/Listing";
 import Card from "components/Card";
 import CardSkeleton from "components/CardSkeleton";
 import Container from "components/Container";
+import MetaTags from "components/MetaTags";
 
 export type NFTProps = {
   id: string;
@@ -21,7 +22,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { contract } = useContract(
-    process.env.NEXT_PUBLIC_SMART_CONTRACT_MARKETPLACE as string,
+    process.env.NEXT_PUBLIC_SMART_CONTRACT_MARKETPLACE,
     "marketplace-v3"
   );
 
@@ -50,18 +51,16 @@ export default function Home() {
 
   return (
     <Container className="min-w-full">
-      <Head>
-        <title>Coders NFT</title>
-      </Head>
+      <MetaTags title="NFTs" />
 
-      <nav className="flex justify-between items-baseline">
-        <h2 className="text-5xl font-bold mt-24">Discovery</h2>
+      <nav className="flex flex-wrap justify-between items-baseline">
+        <h2 className="text-5xl font-bold mt-24 mb-6 md:mb-0">Discovery</h2>
 
         <input
           placeholder="Search item"
           value={searchTerm}
           onChange={handleSearchTermChange}
-          className="h-12 w-64 p-4 border border-[#242634] rounded-xl placeholder-[#93989A] bg-[#20222E]"
+          className="h-12 w-full md:w-64 p-4 border border-[#242634] rounded-xl drop-shadow-md placeholder-[#93989A] bg-[#20222E]"
         />
       </nav>
 
@@ -77,7 +76,7 @@ export default function Home() {
                 <CardSkeleton key={n} />
               ))}
             </>
-          ): (
+          ) : (
             <>
               {filteredListings?.map((listing) => (
                 <Card key={listing.id} listing={listing} />

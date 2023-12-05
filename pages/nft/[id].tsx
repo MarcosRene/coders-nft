@@ -16,6 +16,7 @@ import Listing from "services/mappers/Listing";
 import Card from "components/Card";
 import Container from "components/Container";
 import DetailsSkeleton from "components/DetailsSkeleton";
+import MetaTags from "components/MetaTags";
 import Spinner from "components/Spinner";
 
 export default function Details() {
@@ -41,8 +42,6 @@ export default function Details() {
   const { contract: contractAddress } = useContract(
     listing?.assetContractAddress
   );
-
-  console.log({ listing });
 
   const { data: nft } = useNFT(contractAddress, listing?.asset.id);
 
@@ -73,11 +72,9 @@ export default function Details() {
 
   return (
     <Container>
-      <Head>
-        <title>{formatListing?.name} | Coders NFT</title>
-      </Head>
+      <MetaTags title={formatListing?.name} />
 
-      <div className="mt-24 flex">
+      <div className="mt-8 md:mt-24 flex flex-wrap lg:flex-nowrap">
         {isLoading && !error ? (
           <DetailsSkeleton />
         ) : (
@@ -85,10 +82,10 @@ export default function Details() {
             <img
               src={formatListing.image}
               alt={formatListing.name}
-              className="rounded-[1.25rem] w-[40rem] h-auto"
+              className="w-full max-w-xl max-h-max rounded-[1.25rem]"
             />
 
-            <div className="ml-10 max-w-50%">
+            <div className="w-full min-w-xl mt-8 lg:mt-0 lg:ml-10 text-justify">
               <h1 className="text-5xl font-bold">{formatListing.name}</h1>
               <span className="text-[#93989A] mt-4 block">
                 {formatListing.description}
@@ -125,12 +122,11 @@ export default function Details() {
         <h2 className="text-4xl mt-24 font-semibold">More Works</h2>
 
         <div className="flex flex-wrap items-start gap-4 mt-7">
-          {formatListings
-            ?.slice()
-            .filter((item) => item.id !== nftId)
-            .map((nft) => (
-              <Card key={nft.id} listing={nft} />
-            ))}
+          {formatListings &&
+            formatListings
+              .slice()
+              .filter((item) => item.id !== nftId)
+              .map((nft) => <Card key={nft.id} listing={nft} />)}
         </div>
       </div>
     </Container>
