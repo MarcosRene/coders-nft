@@ -4,10 +4,14 @@ import { Toaster } from "react-hot-toast";
 import "../styles/globals.css";
 
 import Layout from "./_layout";
+import Head from "next/head";
 
 export default function MyApp({ Component, pageProps }) {
   return (
-    <ThirdwebProvider activeChain="sepolia">
+    <ThirdwebProvider
+      activeChain="sepolia"
+      clientId={process.env.NEXT_PUBLIC_CLIENT_ID}
+    >
       <Layout>
         <Component {...pageProps} />
         <Progress
