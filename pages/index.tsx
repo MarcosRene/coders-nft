@@ -1,13 +1,17 @@
 import Head from "next/head";
+import { useContract, useDirectListings } from "@thirdweb-dev/react";
 import { ChangeEvent, useMemo, useState } from "react";
 
+import Listing from "services/mappers/Listing";
+
 import Card from "components/Card";
+import CardSkeleton from "components/CardSkeleton";
 import Container from "components/Container";
 
 export type NFTProps = {
   id: string;
   name: string;
-  price: string;
+  price: number;
   author: string;
   image: string;
   description: string;
@@ -16,12 +20,28 @@ export type NFTProps = {
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredNfts = useMemo(
+  const { contract } = useContract(
+    process.env.NEXT_PUBLIC_SMART_CONTRACT_MARKETPLACE as string,
+    "marketplace-v3"
+  );
+
+  const {
+    data: directListings,
+    isLoading,
+    error,
+  } = useDirectListings(contract);
+
+  const formatListings =
+    directListings &&
+    directListings.map((directListings) => Listing.toDomain(directListings));
+
+  const filteredListings = useMemo(
     () =>
-      nftsMock.filter((nft) =>
+      formatListings &&
+      formatListings.filter((nft) =>
         nft.name.toLowerCase().includes(searchTerm.toLowerCase())
       ),
-    [searchTerm]
+    [searchTerm, formatListings]
   );
 
   function handleSearchTermChange(event: ChangeEvent<HTMLInputElement>) {
@@ -51,9 +71,19 @@ export default function Home() {
         <h2 className="text-5xl font-bold">Popular Bid</h2>
 
         <div className="flex flex-wrap items-start gap-7 mt-7 min-h-[50%]">
-          {filteredNfts.map((nft) => (
-            <Card key={nft.id} nft={nft} />
-          ))}
+          {isLoading && !error ? (
+            <>
+              {Array.from(Array(5).keys()).map((n) => (
+                <CardSkeleton key={n} />
+              ))}
+            </>
+          ): (
+            <>
+              {filteredListings?.map((listing) => (
+                <Card key={listing.id} listing={listing} />
+              ))}
+            </>
+          )}
         </div>
       </div>
     </Container>

@@ -5,27 +5,27 @@ import { Ethereum } from "assets/Ethereum";
 import { NFTProps } from "pages";
 
 type CardProps = {
-  nft: NFTProps;
+  listing: NFTProps;
 };
 
-export default function Card({ nft }: CardProps) {
+export default function Card({ listing }: CardProps) {
   const router = useRouter();
 
   return (
     <article
-      onClick={() => router.push(`/nft/${nft.id}`)}
+      onClick={() => router.push(`/nft/${listing.id}`)}
       className="width-[24rem] h-[31rem] bg-[#242634] rounded-[1.25rem] cursor-pointer"
     >
       <img
-        src={nft.image}
-        alt={nft.name}
+        src={listing.image}
+        alt={listing.name}
         className="rounded-[1.25rem] p-2 w-96 h-80"
       />
 
       <div className="mx-6 mt-4">
         <div className="mb-5">
-          <strong className="text-2xl block">{nft.name}</strong>
-          <span className="mt-1 text-[#93989a]">By {nft.author}</span>
+          <strong className="text-2xl block">{listing.name}</strong>
+          <span className="mt-1 text-[#93989a]">By {listing.author}</span>
         </div>
 
         <div>
@@ -34,7 +34,7 @@ export default function Card({ nft }: CardProps) {
           <div className="flex mt-0.5">
             <Ethereum />
             <span className="text-xl font-semibold">
-              {formatCurrency(Number(nft.price))}
+              {formatCurrency(listing.price)}
             </span>
           </div>
 

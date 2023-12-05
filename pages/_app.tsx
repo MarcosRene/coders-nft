@@ -1,12 +1,14 @@
-import "../styles/globals.css";
 import { ThirdwebProvider } from "@thirdweb-dev/react";
 import Progress from "nextjs-progressbar";
+import "../styles/globals.css";
 
 import Layout from "./_layout";
 
 export default function MyApp({ Component, pageProps }) {
   return (
-    <ThirdwebProvider activeChain="sepolia">
+    <ThirdwebProvider 
+      activeChain="sepolia"
+    >
       <Layout>
         <Component {...pageProps} />
         <Progress
